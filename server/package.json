@@ -1,0 +1,18 @@
+{
+  "name": "sendgrid-parse-api-example",
+  "version": "0.0.1",
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.2.x"
+  },
+  "main": "app.js",
+  "description": "Example application using the SendGrid Parse API.",
+  "dependencies": {
+    "dotenv": "0.0.3",
+    "events": "^1.0.2",
+    "hapi": "1.6.2",
+    "request": "2.21.0",
+    "sendgrid": "0.3.0-rc.1.8",
+    "socket.io": "^1.2.1"
+  }
+}
