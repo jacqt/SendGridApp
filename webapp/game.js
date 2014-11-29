@@ -1,22 +1,17 @@
 var gameModel = {
     fireBullet : null,
-    webSocket : null,
     asteroids : [
-    { 
-        loc : { x: 150, y:450 },
-        direction : { x: 2, y : 0 },
-        radius : 15
-    },
+    /*,
     { 
         loc : { x: 150, y:150 },
         direction : { x: 2, y : 2 },
         radius : 15
-    }
+    }*/
     ],
     enemy_ships : [],
     bullets : [],
     control_center : null,
-    websocket : null
+    ticks: 0
 };
 
 
@@ -34,31 +29,33 @@ var gameModel = {
         }
     };
 
-    gameModel.fireBullet = function(angle){
+    gameModel.fireBullet = function(angle, name){
         var radians = angle * (Math.PI/180.0);
         var newBullet = {
             loc : { x: width/2 , y : height/2 },
             direction : { x : Math.cos(radians) * 2, y : Math.sin(radians) * 2 },
-            radius : 5
+            radius : 5,
+            angle: radians % Math.PI,
+            name: name
         };
         gameModel.bullets.push(newBullet);
     }
 
     var gameCanvas = document.querySelector('#gameCanvas');
     var gameContext = gameCanvas.getContext('2d');
+    gameContext.font="15px Verdana";
 
-    gameModel.websocket = new WebSocket(serverUrl);
-    gameModel.websocket.onopen = function(event){
+    gameModel.start = function(event){
         gameLoop();
-        for (var i = 0; i < 360; i += 10){
-            gameModel.fireBullet(i);
-        }
     }
 
-    gameModel.websockets.onmessage = function(event){
-        var serverSentModel = JSON.parse(event.data);
-        gameModel.asteroids = serverSentModel.asteroids;
-        gameModel.bullets = serverSentModel.bullets;
+    gameModel.message = function(data){
+        var serverSentModel = data;
+        var angle = data[0] - 90;
+        var name = data[1];
+        gameModel.fireBullet(angle, name);
+        //gameModel.asteroids = serverSentModel.asteroids;
+        //gameModel.bullets = serverSentModel.bullets;
     }
 
     function drawModel(){
@@ -77,12 +74,38 @@ var gameModel = {
         
         //Draw the bullets
         gameModel.bullets.map(function(bullet){
-            drawCircle(bullet.loc.x, bullet.loc.y, bullet.radius, 'rgba(0,255,0,0.5)')
+            drawCircle(bullet.loc.x, bullet.loc.y, bullet.radius, 'rgba(0,255,0,0.5)');
+            drawString(bullet.name, bullet.loc.x, bullet.loc.y, bullet.angle)
         });
+    }
+
+    function drawString(text, x, y, angle) {
+         gameContext.save();
+         gameContext.translate(x, y);
+         gameContext.rotate(angle);
+         gameContext.textAlign = "center";
+         gameContext.fillText(text, 0, 0);
+         gameContext.restore();
+    }
+
+    function getRnd(min, max) {
+        return Math.random() * (max - min) + min;
     }
 
     function updateModel(){
         //Move the asteroid
+        gameModel.ticks += 1;
+        if (gameModel.ticks % 1000 == 0) {
+            var radians = getRnd(0,Math.PI * 2);
+            var dir = { x : Math.cos(radians) * 2, y : Math.sin(radians) * 2 };
+            var loc = { x : -Math.cos(radians) * 200, y : -Math.sin(radians) * 200};
+            gameModel.asteroids.push({ 
+                loc : loc,
+                direction : dir,
+                radius : 15
+            });
+        }
+
         gameModel.asteroids.map(function(asteroid){
             asteroid.loc.x += asteroid.direction.x;
             asteroid.loc.y += asteroid.direction.y;
@@ -168,7 +191,6 @@ var gameModel = {
     function gameLoop(){
         drawModel();
         if (!updateModel()){
-            console.log(gameModel.bullets);
             setTimeout(gameLoop, 30);
         }
     }
