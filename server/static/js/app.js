@@ -33,7 +33,8 @@ var gameModel = {
 	var height = 1024;
 	var serverUrl = "";
 	var BULLETSPEED = 8;
-	var ASTEROIDSPEED = 0.6;
+	var ASTEROIDSPEED = 0.4;
+	var ASTEROIDPERIOD = 200; //lower = more frequent
 
 	gameModel.control_center = {
 		radius: 30,
@@ -118,11 +119,12 @@ var gameModel = {
 			gameContext.fillStyle = "rgba(0,0,0,0.1)";
 			gameContext.fillRect(0, 0, width, height);
 			gameContext.restore();
-			drawString("GAME OVER", gamewidth / 2, height / 2, 0, "center", "white");
+			drawString("GAME OVER", gamewidth / 2, height / 2, 0, "center", "white", false);
 			return;
 		}
-
+		gameModel.gameIsOver = false;
 		gameContext.clearRect(0, 0, width, height);
+		drawString("Send email to a@james-thompson.me with subject '0' to '360'", gamewidth / 2, 35, 0, "center", "white", false);
 
     //Draw the control center
     drawCircle(gameModel.control_center.loc.x,
@@ -134,7 +136,7 @@ var gameModel = {
     gameModel.asteroids.map(function(asteroid){
     	drawCircle(asteroid.loc.x, asteroid.loc.y, asteroid.radius, 'rgba(255,0,0,0.5)')
     });
-    
+
     //Draw the bullets
     gameModel.bullets.map(function(bullet){
     	drawCircle(bullet.loc.x, bullet.loc.y, bullet.radius, bullet.color);
@@ -142,12 +144,12 @@ var gameModel = {
 
     var n = gameModel.playerList.length;
     for (var i = 0; i < n; i++) {
-    	drawString(gameModel.playerList[i].name, width - 20, 35 + 35 * i, 0, "right", gameModel.playerList[i].color);
+    	drawString(gameModel.playerList[i].name, width - 20, 35 + 35 * i, 0, "right", gameModel.playerList[i].color, true);
     }
   }
 
-  function drawString(text, x, y, angle, textAlign, color) {
-  	if (text.length > 12)
+  function drawString(text, x, y, angle, textAlign, color, shorten) {
+  	if (shorten && text.length > 12)
   		text = text.substring(0,10) + "...";
 
   	gameContext.save();
@@ -171,8 +173,7 @@ var gameModel = {
   	}
 
     //Move the asteroid
-    gameModel.ticks += 1;
-    if (gameModel.ticks % 100 == 0) {
+    if (gameModel.ticks % ASTEROIDPERIOD == 0) {
     	var radians = getRnd(0,Math.PI * 2);
 
     	var dir = { x : -Math.cos(radians) * ASTEROIDSPEED, y : -Math.sin(radians) * ASTEROIDSPEED };
@@ -186,6 +187,8 @@ var gameModel = {
     	});
 
     }
+
+    gameModel.ticks += 1;
 
     gameModel.asteroids.map(function(asteroid){
     	asteroid.loc.x += asteroid.direction.x;
@@ -206,13 +209,9 @@ var gameModel = {
     gameModel.asteroids.map(function(asteroid){
     	if (doesOverlap(asteroid, gameModel.control_center)){
     		gameModel.gameOverTicks = 100;
-    		gameIsOver = true;
-
-    		gameModel.bullets = [];
-    		gameModel.playerList = [];
-    		gameModel.asteroids = [];
-    		return;
+    		gameModel.gameIsOver = true;
     	}
+
     	var asteroidBlownUp = false;
 
     	if (isOutOfBounds(asteroid)){
@@ -232,6 +231,13 @@ var gameModel = {
     		newAsteroids.push(asteroid);
     	}
     });
+
+    if (gameModel.gameIsOver) {
+    	gameModel.bullets = [];
+    	gameModel.playerList = [];
+    	gameModel.asteroids = [];
+    	return;
+    }
 
     for (var j = 0; j != gameModel.bullets.length; ++j){
     	var bullet = gameModel.bullets[j];
