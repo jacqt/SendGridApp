@@ -33,8 +33,8 @@ var gameModel = {
 	var height = 1024;
 	var serverUrl = "";
 	var BULLETSPEED = 8;
-	var ASTEROIDSPEED = 0.4;
-	var ASTEROIDPERIOD = 200; //lower = more frequent
+	var ASTEROIDSPEED = 0.3;
+	var ASTEROIDPERIOD = 250; //lower = more frequent
 
 	gameModel.control_center = {
 		radius: 30,
@@ -60,6 +60,13 @@ var gameModel = {
 	var gameCanvas = document.querySelector('#gameCanvas');
 	var gameContext = gameCanvas.getContext('2d');
 	gameContext.font="15px Verdana";
+
+  var body = document.querySelector('body');
+  body.addEventListener('keydown', function(event) {
+    if (event.keyCode == 65) {
+      spawnAsteroid();
+    }
+  }, false);
 
 	gameModel.start = function(event){
 		gameLoop();
@@ -125,6 +132,7 @@ var gameModel = {
 		gameModel.gameIsOver = false;
 		gameContext.clearRect(0, 0, width, height);
 		drawString("Send email to a@james-thompson.me with subject '0' to '360'", gamewidth / 2, 35, 0, "center", "white", false);
+    drawString("...or Yo 'oxplays'", gamewidth / 2, 70, 0, "center", "white", false);
 
     //Draw the control center
     drawCircle(gameModel.control_center.loc.x,
@@ -144,7 +152,7 @@ var gameModel = {
 
     var n = gameModel.playerList.length;
     for (var i = 0; i < n; i++) {
-    	drawString(gameModel.playerList[i].name, width - 20, 35 + 35 * i, 0, "right", gameModel.playerList[i].color, true);
+    	drawString(gameModel.playerList[i].name, width - 20, 120 + 35 * i, 0, "right", gameModel.playerList[i].color, true);
     }
   }
 
@@ -166,26 +174,30 @@ var gameModel = {
   	return Math.random() * (max - min) + min;
   }
 
+  function spawnAsteroid() {
+      var radians = getRnd(0,Math.PI * 2);
+      var mult = 1 + gameModel.ticks / 400;
+      var dir = { x : -Math.cos(radians) * ASTEROIDSPEED * mult, y : -Math.sin(radians) * ASTEROIDSPEED * mult };
+      var x = (gamewidth / 2) * (1 + Math.cos(radians))
+      var y = (height / 2) * (1 + Math.sin(radians))
+      var loc = { x : x, y : y};
+      gameModel.asteroids.push({ 
+        loc : loc,
+        direction : dir,
+        radius : 15
+      });
+  }
+
   function updateModel(){
   	if (gameModel.gameOverTicks > 0) {
   		gameModel.gameOverTicks -= 1;
+      gameModel.ticks = 0;
   		return;
   	}
 
     //Move the asteroid
     if (gameModel.ticks % ASTEROIDPERIOD == 0) {
-    	var radians = getRnd(0,Math.PI * 2);
-
-    	var dir = { x : -Math.cos(radians) * ASTEROIDSPEED, y : -Math.sin(radians) * ASTEROIDSPEED };
-    	var x = (gamewidth / 2) * (1 + Math.cos(radians))
-    	var y = (height / 2) * (1 + Math.sin(radians))
-    	var loc = { x : x, y : y};
-    	gameModel.asteroids.push({ 
-    		loc : loc,
-    		direction : dir,
-    		radius : 15
-    	});
-
+      spawnAsteroid();
     }
 
     gameModel.ticks += 1;
