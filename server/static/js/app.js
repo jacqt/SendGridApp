@@ -22,6 +22,7 @@ var gameModel = {
 	control_center : null,
 	ticks: 0,
 	playerList : [],
+    explodingObjects : [],
 	gameOverTicks: 0,
     gameWidth: 1024,
     width: 1224,
@@ -147,6 +148,24 @@ var gameModel = {
     	gameModel.control_center.radius,
     	'rgba(255,255,255,1)')
 
+    //draw the exploding objects
+    gameModel.explodingObjects.map(function(obj){
+        console.log(obj.age);
+        obj.fragments.map(function(fragment){
+            gameContext.save();
+            gameContext.beginPath();
+            gameContext.strokeStyle = 'rgba(255,0,0,1)';
+
+            gameContext.beginPath();
+            gameContext.arc(fragment.loc.x, fragment.loc.y, 15,  1.5*Math.PI + fragment.rotation, 1.7*Math.PI + fragment.rotation);
+            gameContext.stroke();
+
+            gameContext.closePath();
+            gameContext.restore();
+            
+        });
+    });
+
     //Draw the asteroids
     gameModel.asteroids.map(function(asteroid){
     	drawCircle(asteroid.loc.x, asteroid.loc.y, asteroid.radius, 'rgba(255,0,0,0.5)')
@@ -223,6 +242,18 @@ var gameModel = {
     	bullet.loc.y += bullet.direction.y;
     });
 
+    gameModel.explodingObjects.map(function(obj){
+        obj.age += 1;
+        obj.fragments.map(function(fragment){
+            fragment.loc.x += fragment.direction.x;
+            fragment.loc.y += fragment.direction.y;
+            fragment.rotation += fragment.rotation_change;
+        })
+    })
+    gameModel.explodingObjects = gameModel.explodingObjects.filter(function(obj){
+        return obj.age < 50;
+    });
+
 
 
     //Detect collisions and out of bounds
@@ -250,6 +281,73 @@ var gameModel = {
     			asteroidBlownUp = true;
     			gameModel.bullets.splice(j, 1);
                 gameModel.playAsteroidExplosionSound = true;
+                var _x = asteroid.loc.x;
+                var _y = asteroid.loc.y;
+                gameModel.explodingObjects.push({
+                    age : 0,
+                    fragments : [
+                        {
+                            rotation : getRnd(0, 1.75 * Math.PI),
+                            rotation_change : getRnd(-.05, 0.05),
+                            loc : {
+                                x : getRnd(_x - 5, _x + 5),
+                                y : getRnd(_y - 5, _y + 5),
+                            },
+                            direction : {
+                                x : getRnd(-1, 1),
+                                y : getRnd(-1, 1),
+                            }
+                        },
+                        {
+                            rotation : getRnd(0, 1.75 * Math.PI),
+                            rotation_change : getRnd(-.05, 0.05),
+                            loc : {
+                                x : getRnd(_x - 5, _x + 5),
+                                y : getRnd(_y - 5, _y + 5),
+                            },
+                            direction : {
+                                x : getRnd(-1, 1),
+                                y : getRnd(-1, 1),
+                            }
+                        },
+                        {
+                            rotation : getRnd(0, 1.75 * Math.PI),
+                            rotation_change : getRnd(-.05, 0.05),
+                            loc : {
+                                x : getRnd(_x - 5, _x + 5),
+                                y : getRnd(_y - 5, _y + 5),
+                            },
+                            direction : {
+                                x : getRnd(-1, 1),
+                                y : getRnd(-1, 1),
+                            }
+                        },
+                        {
+                            rotation : getRnd(0, 1.75 * Math.PI),
+                            rotation_change : getRnd(-.05, 0.05),
+                            loc : {
+                                x : getRnd(_x - 5, _x + 5),
+                                y : getRnd(_y - 5, _y + 5),
+                            },
+                            direction : {
+                                x : getRnd(-1, 1),
+                                y : getRnd(-1, 1),
+                            }
+                        },
+                        {
+                            rotation : getRnd(0, 1.75 * Math.PI),
+                            rotation_change : getRnd(-.05, 0.05),
+                            loc : {
+                                x : getRnd(_x - 5, _x + 5),
+                                y : getRnd(_y - 5, _y + 5),
+                            },
+                            direction : {
+                                x : getRnd(-1, 1),
+                                y : getRnd(-1, 1),
+                            }
+                        },
+                    ]
+                });
     			break;
     		};
     	}
