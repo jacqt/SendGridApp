@@ -150,7 +150,6 @@ var gameModel = {
 
     //draw the exploding objects
     gameModel.explodingObjects.map(function(obj){
-        console.log(obj.age);
         obj.fragments.map(function(fragment){
             gameContext.save();
             gameContext.beginPath();
