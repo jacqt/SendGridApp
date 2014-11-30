@@ -7,6 +7,7 @@ var Utils =  {
     var height = gameModel.height;
     Utils.drawBackground = function(ctx){
         ctx.save();
+        ctx.lineWidth = 1;
         ctx.strokeStyle = "rgba(250,250,250,0.7)";
         ctx.beginPath();
         ctx.moveTo(50, height/2);

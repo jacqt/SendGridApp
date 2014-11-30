@@ -154,6 +154,7 @@ var gameModel = {
         obj.fragments.map(function(fragment){
             gameContext.save();
             gameContext.beginPath();
+            gameContext.lineWidth = 3;
             gameContext.strokeStyle = 'rgba(255,0,0,1)';
 
             gameContext.beginPath();
@@ -168,7 +169,8 @@ var gameModel = {
 
     //Draw the asteroids
     gameModel.asteroids.map(function(asteroid){
-    	drawCircle(asteroid.loc.x, asteroid.loc.y, asteroid.radius, 'rgba(255,0,0,0.5)')
+        //gameContext.strokeStyle = "rgba(0,0,0,0.1)";
+    	drawCircle(asteroid.loc.x, asteroid.loc.y, asteroid.radius, 'rgba(255,0,0,1)', true)
     });
 
     //Draw the bullets
@@ -251,7 +253,7 @@ var gameModel = {
         })
     })
     gameModel.explodingObjects = gameModel.explodingObjects.filter(function(obj){
-        return obj.age < 50;
+        return obj.age < 25;
     });
 
 
@@ -283,71 +285,25 @@ var gameModel = {
                 gameModel.playAsteroidExplosionSound = true;
                 var _x = asteroid.loc.x;
                 var _y = asteroid.loc.y;
-                gameModel.explodingObjects.push({
+                var newExplodingObject = {
                     age : 0,
-                    fragments : [
-                        {
-                            rotation : getRnd(0, 1.75 * Math.PI),
-                            rotation_change : getRnd(-.05, 0.05),
-                            loc : {
-                                x : getRnd(_x - 5, _x + 5),
-                                y : getRnd(_y - 5, _y + 5),
-                            },
-                            direction : {
-                                x : getRnd(-1, 1),
-                                y : getRnd(-1, 1),
-                            }
+                    fragments : []
+                };
+                for (var i = 0; i < 15; ++i){
+                    newExplodingObject.fragments.push({
+                        rotation : getRnd(0, 1.75 * Math.PI),
+                        rotation_change : getRnd(-.05, 0.05),
+                        loc : {
+                            x : getRnd(_x, _x),
+                            y : getRnd(_y, _y),
                         },
-                        {
-                            rotation : getRnd(0, 1.75 * Math.PI),
-                            rotation_change : getRnd(-.05, 0.05),
-                            loc : {
-                                x : getRnd(_x - 5, _x + 5),
-                                y : getRnd(_y - 5, _y + 5),
-                            },
-                            direction : {
-                                x : getRnd(-1, 1),
-                                y : getRnd(-1, 1),
-                            }
-                        },
-                        {
-                            rotation : getRnd(0, 1.75 * Math.PI),
-                            rotation_change : getRnd(-.05, 0.05),
-                            loc : {
-                                x : getRnd(_x - 5, _x + 5),
-                                y : getRnd(_y - 5, _y + 5),
-                            },
-                            direction : {
-                                x : getRnd(-1, 1),
-                                y : getRnd(-1, 1),
-                            }
-                        },
-                        {
-                            rotation : getRnd(0, 1.75 * Math.PI),
-                            rotation_change : getRnd(-.05, 0.05),
-                            loc : {
-                                x : getRnd(_x - 5, _x + 5),
-                                y : getRnd(_y - 5, _y + 5),
-                            },
-                            direction : {
-                                x : getRnd(-1, 1),
-                                y : getRnd(-1, 1),
-                            }
-                        },
-                        {
-                            rotation : getRnd(0, 1.75 * Math.PI),
-                            rotation_change : getRnd(-.05, 0.05),
-                            loc : {
-                                x : getRnd(_x - 5, _x + 5),
-                                y : getRnd(_y - 5, _y + 5),
-                            },
-                            direction : {
-                                x : getRnd(-1, 1),
-                                y : getRnd(-1, 1),
-                            }
-                        },
-                    ]
-                });
+                        direction : {
+                            x : getRnd(-1, 1),
+                            y : getRnd(-1, 1),
+                        }
+                    });
+                }
+                gameModel.explodingObjects.push(newExplodingObject);
     			break;
     		};
     	}
@@ -387,11 +343,18 @@ var gameModel = {
     return gameIsOver;
   }
 
-  function drawCircle(x, y, radius, strokeStyle){
+  function drawCircle(x, y, radius, strokeStyle, notFill){
   	gameContext.beginPath();
   	gameContext.fillStyle = strokeStyle;
+    gameContext.lineWidth = 3;
+    gameContext.strokeStyle = strokeStyle;
   	gameContext.arc(x, y, radius, 0, 2 * Math.PI );
-  	gameContext.fill();
+    if (notFill){
+        gameContext.stroke();
+    } else {
+        gameContext.fill();
+
+    }
   	gameContext.closePath();
   }
 
