@@ -223,11 +223,6 @@ var gameModel = {
     	bullet.loc.y += bullet.direction.y;
     });
 
-    if (gameModel.playBulletSound){
-        var sound = new Audio("js/assets/phaser.wav");
-        sound.play();
-        gameModel.playBulletSound = false;
-    }
 
 
     //Detect collisions and out of bounds
@@ -254,8 +249,7 @@ var gameModel = {
     		if (doesOverlap(asteroid, bullet)){
     			asteroidBlownUp = true;
     			gameModel.bullets.splice(j, 1);
-                var sound = new Audio("js/assets/8bitexplosion.mp3");
-                sound.play();
+                gameModel.playAsteroidExplosionSound = true;
     			break;
     		};
     	}
@@ -281,6 +275,17 @@ var gameModel = {
     }
 
     gameModel.asteroids = newAsteroids;
+    if (gameModel.playBulletSound){
+        var sound = new Audio("js/assets/phaser.wav");
+        sound.play();
+        gameModel.playBulletSound = false;
+    }
+
+    if (gameModel.playAsteroidExplosionSound){
+        var sound = new Audio("js/assets/8bitexplosion.mp3");
+        sound.play();
+        gameModel.playAsteroidExplosionSound = false;
+    }
     return gameIsOver;
   }
 
