@@ -4,6 +4,11 @@ var inbound = {
     var dir = request.params.q;
     request.reply({ success: true });
     
+    if (dir === 'all') {
+      eventEmitter.emit("all", payload.username);
+      return;
+    }
+
     if (dir === 'random') {
       eventEmitter.emit("data", [getRnd(0,360), payload.username]);
       eventEmitter.emit("data", [getRnd(0,360), payload.username]);
