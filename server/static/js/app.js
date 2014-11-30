@@ -1,3 +1,4 @@
+
 socket = io.connect("/")
 
 socket.on("connect", function () {
@@ -12,7 +13,11 @@ socket.on("data", function (data) {
 	gameModel.message(data);
 });
 
-
+socket.on("all", function (data) {
+  for (var i = 0; i < 360; i += 2) {
+    gameModel.message([i, data]);
+  }
+});
 
 var gameModel = {
 	fireBullet : null,
