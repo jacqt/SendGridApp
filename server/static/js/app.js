@@ -22,7 +22,11 @@ var gameModel = {
 	control_center : null,
 	ticks: 0,
 	playerList : [],
-	gameOverTicks: 0
+	gameOverTicks: 0,
+    gameWidth: 1024,
+    width: 1224,
+    height : 1024,
+    drawString : null
 };
 
 
@@ -56,6 +60,7 @@ var gameModel = {
 		};
 		gameModel.bullets.push(newBullet);
 	}
+    gameModel.drawString = drawString;
 
 	var gameCanvas = document.querySelector('#gameCanvas');
 	var gameContext = gameCanvas.getContext('2d');
@@ -124,6 +129,7 @@ var gameModel = {
 		}
 		gameModel.gameIsOver = false;
 		gameContext.clearRect(0, 0, width, height);
+        Utils.drawBackground(gameContext);
 		drawString("Send email to a@james-thompson.me with subject '0' to '360'", gamewidth / 2, 35, 0, "center", "white", false);
 
     //Draw the control center
@@ -148,7 +154,7 @@ var gameModel = {
     }
   }
 
-  function drawString(text, x, y, angle, textAlign, color, shorten) {
+  function drawString(text, x, y, angle, textAlign, color, shorten, font) {
   	if (shorten && text.length > 12)
   		text = text.substring(0,10) + "...";
 
@@ -156,7 +162,10 @@ var gameModel = {
   	gameContext.translate(x, y);
   	gameContext.rotate(angle);
   	gameContext.textAlign = textAlign;
-  	gameContext.font="30px Verdana";
+    gameContext.font="30px Verdana";
+    if (font){
+        gameContext.font = font;
+    }
   	gameContext.fillStyle = color;
   	gameContext.fillText(text, 0, 0);
   	gameContext.restore();
