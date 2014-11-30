@@ -37,7 +37,7 @@ var gameModel = {
 	var width = 1224;
 	var height = 1024;
 	var serverUrl = "";
-	var BULLETSPEED = 8;
+	var BULLETSPEED = 5;
 	var ASTEROIDSPEED = 0.3;
 	var ASTEROIDPERIOD = 250; //lower = more frequent
 
@@ -139,8 +139,8 @@ var gameModel = {
 		gameModel.gameIsOver = false;
 		gameContext.clearRect(0, 0, width, height);
         Utils.drawBackground(gameContext);
-		drawString("Send email to a@james-thompson.me with subject '0' to '360'", gamewidth / 2, 35, 0, "center", "white", false);
-    drawString("...or Yo 'oxplays'", gamewidth / 2, 70, 0, "center", "white", false);
+		drawString("Send email to a@oxteroids.me with subject '0' to '360'", gamewidth / 2, 35, 0, "center", "white", false);
+    drawString("...or Yo oxplays{up,down,left,right}", gamewidth / 2, 70, 0, "center", "white", false);
 
     //Draw the control center
     drawCircle(gameModel.control_center.loc.x,
