@@ -17,6 +17,9 @@ var ioHandler = function (socket) {
     eventEmitter.on('data', function(data) {
       socket.emit('data', data);
     });
+    eventEmitter.on('all', function(data) {
+      socket.emit('all', data);
+    });
 }
 
 io.on("connection", ioHandler);
